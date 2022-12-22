@@ -35,19 +35,27 @@ export default class XournalppPlugin extends Plugin {
 			if (sourceFile.extension !== 'xopp')
 				this.showError(el, `Source '${sourceFile.path}' is not a .xopp`)
 			else
-				await this.converter.generatePNG(sourceFile, source)
-					.then(thumbnailFile => {
-						this.createThumbnail(el, thumbnailFile, sourceFile)
-					}).catch(err => {
-						this.showError(el, `Convert failed with error code  ${err}`)
-					})
+				await this.generateAndView(sourceFile, source, el);
 		} else if (sourceFile instanceof TFolder) {
 			this.showError(el, `Source '${sourceFile.path}' is a folder. Should be .xopp`)
 		}
 	}
 
-	createThumbnail(el: HTMLElement, thumbnailFile: TFile, sourceFile: TFile) {
-		new Thumbnail(el, thumbnailFile, sourceFile).display()
+	private async generateAndView(sourceFile: TFile, source: Source, el: HTMLElement) {
+		await this.converter.generatePNG(sourceFile, source)
+			.then(thumbnailFile => {
+				this.createThumbnail(el, thumbnailFile, sourceFile, source)
+			}).catch(err => {
+				this.showError(el, `Convert failed with error code  ${err}`)
+			})
+	}
+
+	createThumbnail(el: HTMLElement, thumbnailFile: TFile, sourceFile: TFile, source: Source) {
+		new Thumbnail(el, thumbnailFile, sourceFile)
+			.display(async () => {
+				console.debug("refreshing xournalpp view")
+				await this.generateAndView(sourceFile, source, el)
+			})
 	}
 
 	showError(el: HTMLElement, error: string) {

@@ -17,11 +17,14 @@ export class Source {
 
 	static parseInput(source: string, settings: XournalppPluginSettings): Source {
 		const sourceLines = source.trim().split('\n');
+
+		if (sourceLines.length === 0) throw Error();
+
 		const url = sourceLines.shift();
 		const yaml = parseYaml(sourceLines.join('\n'))
 
 		return new Source(
-			url,
+			url as string,
 			yaml?.height ?? settings.defaultHeight,
 			yaml?.width ?? settings.defaultWidth,
 			yaml?.pages ?? 1
