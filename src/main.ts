@@ -1,4 +1,4 @@
-import {debounce, Plugin, TFile, TFolder} from 'obsidian';
+import {debounce, Plugin, TAbstractFile, TFile, TFolder} from 'obsidian';
 import {Source} from "./Source";
 import {XournalppSettingTab} from "./ui/XournalppSettingTab";
 import {XournalppPluginSettings} from "./XournalppPluginSettings";
@@ -28,7 +28,7 @@ export default class XournalppPlugin extends Plugin {
 	async process(sourceText: string, el: HTMLElement) {
 		const source = Source.parseInput(sourceText, this.settings)
 
-		let sourceFile = this.app.vault.getAbstractFileByPath(source.file)
+		const sourceFile = this.app.vault.getAbstractFileByPath(source.file)
 		if (sourceFile == null) {
 			this.showError(el, `Source '${source.file}' is not found`)
 		} else if (sourceFile instanceof TFile) {
@@ -36,8 +36,8 @@ export default class XournalppPlugin extends Plugin {
 				this.showError(el, `Source '${sourceFile.path}' is not a .xopp`)
 			else
 				await this.converter.generatePNG(sourceFile, source)
-					.then(generatedUrl => {
-						this.createThumbnail(el, generatedUrl)
+					.then(thumbnailFile => {
+						this.createThumbnail(el, thumbnailFile, sourceFile)
 					}).catch(err => {
 						this.showError(el, `Convert failed with error code  ${err}`)
 					})
@@ -46,10 +46,8 @@ export default class XournalppPlugin extends Plugin {
 		}
 	}
 
-	createThumbnail(el: HTMLElement, file: TFile) {
-		let thumbnailUrl = this.app.vault.getResourcePath(file);
-
-		new Thumbnail(el, file, thumbnailUrl).display()
+	createThumbnail(el: HTMLElement, thumbnailFile: TFile, sourceFile: TFile) {
+		new Thumbnail(el, thumbnailFile, sourceFile).display()
 	}
 
 	showError(el: HTMLElement, error: string) {
