@@ -10,7 +10,14 @@
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
 		"postinstall": "husky install",
 		"prepack": "pinst --disable",
-		"postpack": "pinst --enable"
+		"postpack": "pinst --enable",
+		"release": "standard-version",
+		"release:minor": "standard-version --release-as minor",
+		"release:patch": "standard-version --release-as patch",
+		"release:major": "standard-version --release-as major"
+	},
+	"standard-version": {
+		"t": ""
 	},
 	"keywords": [],
 	"author": "",
