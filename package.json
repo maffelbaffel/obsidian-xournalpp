@@ -19,8 +19,7 @@
 	"standard-version": {
 		"t": ""
 	},
-	"keywords": [],
-	"author": "",
+	"author": "maffelbaffel",
 	"license": "MIT",
 	"dependencies": {
 		"obsidian": "1.1.1",
