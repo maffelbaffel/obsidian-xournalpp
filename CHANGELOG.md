@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/maffelbaffel/obsidian-xournalpp/compare/0.1.0...0.2.0) (2023-02-06)
+
+
+### Features
+
+* jump to page ([48b5cbe](https://github.com/maffelbaffel/obsidian-xournalpp/commit/48b5cbed1584467cfe9a1f61bfe15a816c4327c6))
+
 ## 0.1.0 (2022-12-24)
 
 
