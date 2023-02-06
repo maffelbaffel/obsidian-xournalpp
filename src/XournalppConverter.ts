@@ -18,6 +18,8 @@ export class XournalppConverter {
 			args.push(`--export-png-height=${source.height}`)
 		if (source.width !== IGNORE_WIDTH)
 			args.push(`--export-png-width=${source.width}`)
+		if (source.isSinglePage())
+			args.push(`--page=${source.pages}`)
 
 		let prc = spawn('xournalpp', args, {cwd: (<any>this.app.vault.adapter)['basePath']});
 		return new Promise((resolve, reject) => {

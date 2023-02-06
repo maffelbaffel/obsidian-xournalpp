@@ -39,6 +39,8 @@ export default class XournalppPlugin extends Plugin {
 		} else if (sourceFile instanceof TFile) {
 			if (sourceFile.extension !== 'xopp')
 				this.showError(el, `Source '${sourceFile.path}' is not a .xopp`)
+			else if (!okResult.isSinglePage())
+				this.showError(el, `Currently only single pages are supported`)
 			else
 				await this.generateAndView(sourceFile, okResult, el);
 		} else if (sourceFile instanceof TFolder) {

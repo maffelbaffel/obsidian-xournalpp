@@ -28,7 +28,11 @@ export class Source {
 			url as string,
 			yaml?.height ?? settings.defaultHeight,
 			yaml?.width ?? settings.defaultWidth,
-			yaml?.pages ?? 1
+			yaml?.pages?.toString() ?? 1
 		))
+	}
+
+	isSinglePage(): boolean {
+		return /^\d+$/.test(this.pages)
 	}
 }
