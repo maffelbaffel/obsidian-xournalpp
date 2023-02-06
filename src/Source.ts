@@ -1,5 +1,6 @@
 import {parseYaml} from "obsidian";
 import {XournalppPluginSettings} from "./XournalppPluginSettings";
+import {Err, Ok, Result} from "ts-results";
 
 export class Source {
 	/**
@@ -15,19 +16,19 @@ export class Source {
 		readonly pages: string) {
 	}
 
-	static parseInput(source: string, settings: XournalppPluginSettings): Source {
+	static parseInput(source: string, settings: XournalppPluginSettings): Result<Source, string> {
 		const sourceLines = source.trim().split('\n');
 
-		if (sourceLines.length === 0) throw Error();
+		const url = sourceLines.shift()?.trim();
+		if (url === null) return new Err("Empty input");
 
-		const url = sourceLines.shift();
 		const yaml = parseYaml(sourceLines.join('\n'))
 
-		return new Source(
+		return new Ok(new Source(
 			url as string,
 			yaml?.height ?? settings.defaultHeight,
 			yaml?.width ?? settings.defaultWidth,
 			yaml?.pages ?? 1
-		)
+		))
 	}
 }

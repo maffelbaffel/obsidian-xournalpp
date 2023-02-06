@@ -1,4 +1,4 @@
-import {debounce, Plugin, TAbstractFile, TFile, TFolder} from 'obsidian';
+import {Plugin, TFile, TFolder} from 'obsidian';
 import {Source} from "./Source";
 import {XournalppSettingTab} from "./ui/XournalppSettingTab";
 import {XournalppPluginSettings} from "./XournalppPluginSettings";
@@ -18,24 +18,29 @@ export default class XournalppPlugin extends Plugin {
 
 	async onload() {
 		console.debug("Loading XournalppPlugin")
-		let processDebouncer = debounce(async (sourceText: string, el: HTMLElement) => this.process(sourceText, el), 50);
 
 		await this.loadSettings();
 		this.addSettingTab(new XournalppSettingTab(this.app, this));
-		this.registerMarkdownCodeBlockProcessor('xournalpp', async (sourceText, el) => processDebouncer(sourceText, el));
+		this.registerMarkdownCodeBlockProcessor('xournalpp', async (sourceText, el) => this.process(sourceText, el));
 	}
 
 	async process(sourceText: string, el: HTMLElement) {
-		const source = Source.parseInput(sourceText, this.settings)
+		const parseResult = Source.parseInput(sourceText, this.settings)
 
-		const sourceFile = this.app.vault.getAbstractFileByPath(source.file)
+		if (parseResult.err) {
+			this.showError(el, parseResult.val)
+			return;
+		}
+
+		let okResult = parseResult.val;
+		const sourceFile = this.app.vault.getAbstractFileByPath(okResult.file)
 		if (sourceFile == null) {
-			this.showError(el, `Source '${source.file}' is not found`)
+			this.showError(el, `Source '${okResult.file}' is not found`)
 		} else if (sourceFile instanceof TFile) {
 			if (sourceFile.extension !== 'xopp')
 				this.showError(el, `Source '${sourceFile.path}' is not a .xopp`)
 			else
-				await this.generateAndView(sourceFile, source, el);
+				await this.generateAndView(sourceFile, okResult, el);
 		} else if (sourceFile instanceof TFolder) {
 			this.showError(el, `Source '${sourceFile.path}' is a folder. Should be .xopp`)
 		}
@@ -59,8 +64,11 @@ export default class XournalppPlugin extends Plugin {
 	}
 
 	showError(el: HTMLElement, error: string) {
-		const span = el.createEl('span');
-		span.innerText = error;
+		el.find('.xournalpp-thumbnail')?.remove()
+		el.createEl('span', {}, span => {
+			span.innerText = error;
+			span.addClass('.xournalpp-thumbnail');
+		});
 	}
 
 	onunload() {

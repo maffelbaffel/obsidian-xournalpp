@@ -1,4 +1,4 @@
-import {App, debounce, Debouncer, TFile} from "obsidian";
+import {App, TFile} from "obsidian";
 import {Source} from "./Source";
 import {spawn} from "child_process";
 import {IGNORE_HEIGHT, IGNORE_WIDTH} from "./main";
@@ -26,6 +26,9 @@ export class XournalppConverter {
 					reject(code);
 				else
 					resolve(target);
+			});
+			prc.on('error', async (e) => {
+				reject(e.message);
 			});
 		});
 	}
